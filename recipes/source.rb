@@ -44,15 +44,32 @@ remote_file "#{Chef::Config[:file_cache_path]}/transmission-#{version}.tar.bz2" 
   action :create_if_missing
 end
 
-bash "compile_transmission" do
+remote_file "#{Chef::Config[:file_cache_path]}/libevent-2.0.20-stable.tar.gz" do
+  source "http://cloud.github.com/downloads/libevent/libevent/libevent-2.0.20-stable.tar.gz"
+  checksum "10698a0e6abb3ca00b1c9e8cfddc66933bcc4c9c78b5600a7064c4c3ef9c6a24"
+  action :create_if_missing
+end
+
+bash "compile_libevent" do
   cwd Chef::Config[:file_cache_path]
   code <<-EOH
-    tar xvjf transmission-#{version}.tar.bz2
-    cd transmission-#{version}
+    tar xfz libevent-2.0.20-stable.tar.gz
+    cd libevent-2.0.20-stable
     ./configure -q && make -s
     make install
   EOH
-  creates "/usr/local/bin/transmission-daemon"
+  creates "/usr/local/lib/libevent.so"
+end
+
+bash "compile_transmission" do
+  cwd Chef::Config[:file_cache_path]
+  code <<-EOH
+    tar xjf transmission-#{version}.tar.bz2
+    cd transmission-#{version}
+    ./configure -q LIBEVENT_CFLAGS=-I/usr/local/include LIBEVENT_LIBS="-L/usr/local/lib -levent" && make -s
+    make install
+  EOH
+  not_if "transmission-daemon --version 2>&1 | grep #{version}"
 end
 
 group node['transmission']['group'] do
