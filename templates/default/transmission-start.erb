@@ -7,7 +7,7 @@
 # This hosts should be offline when start transmission
 IMPORTANT_ADDRESS="<%= node['transmission']['cron-start']['stop_ips'] %>"
 TRANS_REMOTE="transmission-remote"
-DEFAULT_OPT="-ne"
+DEFAULT_OPT="--auth <%= node['transmission']['rpc-username'] %>:<%= node['transmission']['rpc-password'] %>"
 LOCK_FILE="/tmp/transmission-stop.lock"
 
 # Ping command
