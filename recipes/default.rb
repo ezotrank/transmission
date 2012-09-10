@@ -74,6 +74,7 @@ template "#{node['transmission']['config_dir']}/settings.json" do
   owner "root"
   group "root"
   mode "0644"
+  notifies :reload, "service[transmission]", :immediate
   notifies :restart, "service[transmission]", :immediate
 end
 
