@@ -1,0 +1,76 @@
+#!/bin/bash
+
+# NOTICE:
+# Insert this script to crontab with "/bin/bash -l -c 'transmission-start'" command
+# because auth login and password set in variable in ~/.bash_profile
+
+# This hosts should be offline when start transmission
+IMPORTANT_ADDRESS="<%= node['transmission']['cron-start']['stop_ips'] %>"
+TRANS_REMOTE="transmission-remote"
+DEFAULT_OPT="-ne"
+LOCK_FILE="/tmp/transmission-stop.lock"
+
+# Ping command
+function ping_command() {
+    ping -c 2 -w 2 "$1" -q &>/dev/null
+}
+
+# Check live hosts by ping
+function check_live_hosts {
+    for i in $IMPORTANT_ADDRESS; do 
+        if ping_command $i ; then
+            return 0
+        fi
+    done
+    return 1
+}
+
+# Checkk ssh connections, only by connected ezo user
+function check_ssh {
+    if [ -n "$(ps aux|grep ssh|grep 'sshd: ezo'|grep -v grep)" ]; then return 0; fi
+    return 1
+}
+
+# Create lock file and start torrents
+function force_start {
+    touch $LOCK_FILE
+    $TRANS_REMOTE $DEFAULT_OPT -p 51444
+    $TRANS_REMOTE $DEFAULT_OPT --torrent all --start
+    echo "Force start all torrents $(date)"
+}
+
+# Simple remove lock file
+function force_stop {
+    rm $LOCK_FILE
+    $TRANS_REMOTE $DEFAULT_OPT -p 51413
+    echo "Remove lock file"
+}
+
+function regular_start {
+    if [[ -e $LOCK_FILE ]]; then
+        echo "Lock file is exist. Nothing do"
+        exit 0
+    fi
+    if check_live_hosts || check_ssh; then
+        $TRANS_REMOTE $DEFAULT_OPT --torrent all --stop
+        echo "Stop all torrents $(date)"
+    else
+        $TRANS_REMOTE $DEFAULT_OPT --torrent all --start
+        echo "Start all torrents $(date)"
+    fi
+}
+
+case "$1" in
+        force_start)
+            force_start
+            ;;
+         
+        force_stop)
+            force_stop
+            ;;
+         
+        *)
+            regular_start
+            ;;
+ 
+esac

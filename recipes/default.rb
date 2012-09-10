@@ -81,3 +81,16 @@ end
 link "/etc/transmission-daemon/settings.json" do
   to "#{node['transmission']['config_dir']}/settings.json"
 end
+
+if node['transmission']['cron-start']
+  template "/usr/local/bin/transmission-start" do
+    source "transmission-start.erb"
+    owner "root"
+    group "root"
+    mode "0755"
+  end
+
+  cron "transmission-start" do
+    command "bash -c -l '/usr/local/bin/transmission-start'"
+  end
+end
