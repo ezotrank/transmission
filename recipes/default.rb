@@ -50,6 +50,14 @@ template "transmission-default" do
   mode "0644"
 end
 
+['download_dir', 'incomplete_dir', 'watch_dir'].each do |dir|
+  directory node['transmission'][dir] do
+    owner node['transmission']['user']
+    group node['transmission']['group']
+    mode "0755"
+  end if node['transmission'][dir]
+end
+
 template "/etc/init.d/transmission-daemon" do
   source "transmission-daemon.init.erb"
   owner "root"
