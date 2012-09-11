@@ -20,23 +20,6 @@
 
 include_recipe "transmission::#{node['transmission']['install_method']}"
 
-# Install gems required by LWRP in advance
-# activesupport 3+ won't run under Ruby 1.8.6
-r = gem_package "activesupport" do
-  version '2.3.11'
-  action :nothing
-end
-r.run_action(:install)
-%w{bencode i18n transmission-simple}.each do |pkg|
-  r = gem_package pkg do
-    action :nothing
-  end
-  r.run_action(:install)
-end
-require 'rubygems'
-Gem.clear_paths
-require 'transmission-simple'
-
 template "transmission-default" do
   case node['platform']
   when "centos","redhat"
@@ -55,6 +38,7 @@ end
     owner node['transmission']['user']
     group node['transmission']['group']
     mode "0755"
+    recursive true
   end if node['transmission'][dir]
 end
 
@@ -83,7 +67,6 @@ template "#{node['transmission']['config_dir']}/settings.json" do
   group "root"
   mode "0644"
   notifies :reload, "service[transmission]", :immediate
-  notifies :restart, "service[transmission]", :immediate
 end
 
 link "/etc/transmission-daemon/settings.json" do
