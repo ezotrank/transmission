@@ -67,7 +67,7 @@ template "#{node['transmission']['config_dir']}/settings.json" do
   group "root"
   mode "0644"
   notifies :reload, "service[transmission]", :immediate
-end
+end unless node['transmission']['configured'] == true
 
 link "/etc/transmission-daemon/settings.json" do
   to "#{node['transmission']['config_dir']}/settings.json"

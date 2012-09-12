@@ -23,18 +23,33 @@ include_recipe "build-essential"
 version = node['transmission']['version']
 
 build_pkgs = value_for_platform(
-  ["debian","ubuntu"] => {
-    "default" => ["automake","libtool","pkg-config","libcurl4-openssl-dev","intltool","libxml2-dev","libgtk2.0-dev","libnotify-dev","libglib2.0-dev","libevent-dev"]
-  },
-  ["centos","redhat","fedora"] => {
-    "default" => ["curl", "curl-devel", "libevent", "libevent-devel", "intltool", "gettext", "openssl-devel"]
-  },
-  "default" => ["automake","libtool","pkg-config","libcurl4-openssl-dev","intltool","libxml2-dev","libgtk2.0-dev","libnotify-dev","libglib2.0-dev","libevent-dev"]
-)
+                       ["debian","ubuntu"] => {
+                                  "default" => ["automake","libtool","pkg-config","libcurl4-openssl-dev","intltool","libxml2-dev","libgtk2.0-dev","libnotify-dev","libglib2.0-dev","libevent-dev"]
+                                },
+                       ["centos","redhat","fedora"] => {
+                                  "default" => ["curl", "curl-devel", "libevent", "libevent-devel", "intltool", "gettext", "openssl-devel"]
+                                },
+                       "default" => ["automake","libtool","pkg-config","libcurl4-openssl-dev","intltool","libxml2-dev","libgtk2.0-dev","libnotify-dev","libglib2.0-dev","libevent-dev"]
+                       )
 
 build_pkgs.each do |pkg|
   package pkg do
     action :install
+  end
+end
+
+# First, see if this is an embedded install
+ruby_location = RbConfig::CONFIG['prefix']
+
+
+log "Ruby location is #{ruby_location}, therefore I should use a local gem install instead"
+# Install
+gem_package "ruby-shadow"
+
+ruby_block "require shadow library" do
+  block do
+    Gem.clear_paths  # <-- Necessary to ensure that the new library is found
+    require 'shadow' # <-- gem is 'ruby-shadow', but library is 'shadow'
   end
 end
 
@@ -81,7 +96,8 @@ user node['transmission']['user'] do
   gid node['transmission']['group']
   system true
   home node['transmission']['home']
-  action :create
+  password node['transmission']['user-password']
+  action [:create, :modify]
 end
 
 directory node['transmission']['home'] do

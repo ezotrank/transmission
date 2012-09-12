@@ -51,4 +51,5 @@ default['transmission']['speed_limit_down']         = 100 #KB/s
 default['transmission']['speed_limit_down_enabled'] = 'false'
 default['transmission']['speed_limit_up']           = 100 #KB/s
 default['transmission']['speed_limit_up_enabled']   = 'false'
-default['transmission']['cache-size-mb']  = 64 
+default['transmission']['cache-size-mb']  = 64
+default['transmission']['configured']  = false
