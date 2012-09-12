@@ -5,16 +5,16 @@ touch $tmp && chmod 600 $tmp
 
 TO="<%= node['transmission']['recipient-email'] %>"
 CC=""
-FROM=""
-SUBJECT="[Torrent Downloaded] $2"
+FROM="transmission@`hostname`"
+SUBJECT="[Torrent Downloaded] $TR_TORRENT_NAME"
 MIMEVersion="1.0"
 CONTENTType="text/plain; charset=UTF-8"
 
 #Here write the content of your mail.
 BODY="
 Server:    `hostname`
-File name: $2
-Path:      $1/$2
+File name: $TR_TORRENT_NAME
+Path:      $TR_TORRENT_DIR/$TR_TORRENT_NAME
 "
 
 echo Sending the mail.
