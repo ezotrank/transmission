@@ -44,7 +44,7 @@ ruby_location = RbConfig::CONFIG['prefix']
 
 log "Ruby location is #{ruby_location}, therefore I should use a local gem install instead"
 # Install
-gem_package "ruby-shadow"
+chef_gem "ruby-shadow"
 
 ruby_block "require shadow library" do
   block do
