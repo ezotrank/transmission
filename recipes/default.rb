@@ -85,3 +85,12 @@ if node['transmission']['cron-start']
     command "bash -c -l '/usr/local/bin/transmission-start'"
   end
 end
+
+if node['transmission']['script-torrent-done-enabled']
+  template "/usr/local/bin/torrents-done.sh" do
+    source "torrents-done.sh.erb"
+    owner "root"
+    group "root"
+    mode "0755"
+  end
+end

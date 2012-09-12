@@ -1,0 +1,31 @@
+#!/bin/bash
+
+tmp=/tmp/mail-body-`date +%F`
+touch $tmp && chmod 600 $tmp
+
+TO="<%= node['transmission']['recipient-email'] %>"
+CC=""
+FROM=""
+SUBJECT="[Torrent Downloaded] $2"
+MIMEVersion="1.0"
+CONTENTType="text/plain; charset=UTF-8"
+
+#Here write the content of your mail.
+BODY="
+Server:    `hostname`
+File name: $2
+Path:      $1/$2
+"
+
+echo Sending the mail.
+echo -e "To: $TO" > $tmp
+echo -e "Cc: $CC" >> $tmp
+echo -e "From: $FROM" >> $tmp
+echo -e "Content-Type: $CONTENTType" >> $tmp
+echo -e "MIME-Version: $MIMEVersion" >> $tmp
+echo -e "Subject: $SUBJECT ">> $tmp
+echo -e "$BODY" >> $tmp
+
+/usr/sbin/sendmail -t < $tmp;
+
+rm -rf $tmp;
