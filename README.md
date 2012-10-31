@@ -9,7 +9,7 @@ Requirements
 Platform
 --------
 
-Known to work on Debian, Ubuntu, Red Hat and CentOS
+Known to work on CentOS
 
 Cookbooks
 ---------
@@ -34,6 +34,8 @@ Attributes
 * `node["transmission"]["speed_limit_down_enabled"]` - Whether the download limit is used, default `false`.
 * `node["transmission"]["speed_limit_up"]` - The KB/s limit for uploading files, default `100`.
 * `node["transmission"]["speed_limit_up_enabled"]` - Whether the upload limit is used, default `false`.
+* `node["transmission"]["ratio-limit"]` - Radio limit, default `2`
+* `node["transmission"]["ratio-limit-enabled"]` default `true`
 
 The file also contains the following attribute types:
 

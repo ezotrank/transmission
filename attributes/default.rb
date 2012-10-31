@@ -53,7 +53,7 @@ default['transmission']['speed_limit_up']           = 100 #KB/s
 default['transmission']['speed_limit_up_enabled']   = 'false'
 default['transmission']['cache-size-mb']  = 64
 default['transmission']['configured']  = false
-default['transmission']['ration-limit'] = 2
-default['transmission']['ration-limit-enabled'] = true
+default['transmission']['ratio-limit'] = 2
+default['transmission']['ratio-limit-enabled'] = true
 default['transmission']['script-torrent-done-enabled'] = false
 
